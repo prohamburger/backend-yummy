@@ -1,11 +1,11 @@
-require('dotenv').config()
-
 const express = require('express')
 const app = express()
 const mongoose = require ('mongoose')
 const bodyParse = require('body-parser')
 const User = require('./models/user');
 const bcrypt = require('bcrypt')
+require('dotenv').config()
+
 var port = process.env.PORT || 3000
 
 app.use(bodyParse.json());
@@ -65,10 +65,7 @@ app.post('/register', async (req, res) => {
 });
 
 //connect DB
-mongoose.connect (
-    'mongodb://localhost:27017/yummy',
-        { useUnifieordTopology: true },
-        () => console.log('connected to DB'))
+mongoose.connect (`${process.env.MONGO_URI}`, { useUnifieordTopology: true }, () => console.log('connected to DB'))
 app.listen(port)
 
 
