@@ -6,7 +6,7 @@ const mongoose = require ('mongoose')
 const bodyParse = require('body-parser')
 const User = require('./models/user');
 const bcrypt = require('bcrypt')
-require('dotenv').config();
+var port = process.env.PORT || 3000
 
 app.use(bodyParse.json());
 
@@ -69,7 +69,7 @@ mongoose.connect (
     'mongodb://localhost:27017/yummy',
         { useUnifieordTopology: true },
         () => console.log('connected to DB'))
-app.listen(PORT || 3000)
+app.listen(port)
 
 
 
