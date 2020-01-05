@@ -24,7 +24,7 @@ router.use(async function (req, res, next) {
       res.send('Not Allowed')
     }
   } catch {
-    res.status(500).send()
+    res.status(500).send({message: "Không trùng khớp"})
   }
 })
 
@@ -49,10 +49,11 @@ router.post('/login', async (req, res) => {
   });
 
   try {
-    let user = await User.find({username: user2.username})
-    res.send({user, state: 'Success'})
-  } catch {
-    res.status(500).send()
+    const user = await User.find({username: user2.username})
+      if (user.length !== 0)
+        res.send({user, state: 'Success'})
+    } catch {
+      res.status(400).send({message: e.message})
   }
 })
 
