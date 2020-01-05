@@ -10,7 +10,14 @@ router.get('/', paginatedResults(Recipes), async (req, res) => {
     } catch (err) {
         res.json({ message: err });
     }
-});
+})
+router.get('/vegetarian', paginatedResults(Recipes, true), async (req, res) => {
+  try {
+    res.json(res.paginatedResults)
+  } catch (err) {
+      res.json({ message: err });
+  }
+})
 router.get('/:categoryid', (req, res) => {
   Recipes.find({category_id: req.params.categoryid})
   .then(data =>{
@@ -29,7 +36,6 @@ router.get('/recipe/:recipeId', (req, res) => {
     return res.status(200).json(data[0])
   })
   .catch (err => next(err))
-
 });
 router.get('/search/:keyword', (req, res) => {
   const regex = req.params.keyword
@@ -41,7 +47,7 @@ router.get('/search/:keyword', (req, res) => {
   .catch (err => next(err))
 })
 
-function paginatedResults(model) {
+function paginatedResults(model, vegetarian) {
   return async (req, res, next) => {
     const page = parseInt(req.query.page)
     const limit = parseInt(req.query.limit)
@@ -65,9 +71,16 @@ function paginatedResults(model) {
       }
     }
     try {
-      results.results = await model.find().limit(limit).skip(startIndex).exec()
-      res.paginatedResults = results
-      next()
+      if (vegetarian){
+        results.results = await model.find({vegetarian: vegetarian}).limit(limit).skip(startIndex).exec()
+        res.paginatedResults = results
+        next()
+      }
+      else {
+        results.results = await model.find().limit(limit).skip(startIndex).exec()
+        res.paginatedResults = results
+        next()
+      }
     } catch (e) {
       res.status(500).json({ message: e.message })
     }

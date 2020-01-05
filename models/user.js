@@ -12,7 +12,8 @@ const UserSchema = mongoose.Schema({
     favourite: {
       type: Array,
       required: false
-    }
+    },
+    vegetarian: false
 });
 
 module.exports = mongoose.model('User', UserSchema);

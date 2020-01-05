@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const express = require('express')
 const app = express()
 const mongoose = require ('mongoose')
@@ -20,11 +22,16 @@ app.use('/user', userRoute);
 
 app.post('/register', async (req, res) => {
   const hashedPassword = await bcrypt.hash(req.body.password, 10)
-  const user = new User({username: req.body.username, password: hashedPassword})
+  const username = req.body.username
+  const password = req.body.password
+  const vegetarian = req.body.vegetarian
+
+  const user = new User({username: username, password: hashedPassword, vegetarian: vegetarian})
   try {
-    const username = req.body.username
-    const password = req.body.password
-    if (username.length >= 4)
+    const reg = RegExp(/[^A-Za-z0-9]/, 'i')
+    let valid = !reg.test(username)
+
+    if (username.length >= 4 && valid){
       if(password.length >= 4)
       User.find({username: req.body.username})
         .then(data => {
@@ -41,8 +48,13 @@ app.post('/register', async (req, res) => {
       else {
         res.status(400).send({message: 'Password tối thiểu 4 ký tự'})
       }
+    }
     else {
-      res.status(400).send({message: 'Username tối thiểu 4 ký tự'})
+      if (!valid) {
+        res.status(400).send({message: 'Tên tài khoản không hợp lệ'})
+      } else {
+        res.status(400).send({message: 'Tên tài khoản tối thiểu 4 ký tự'})
+      }
     }
   }
   catch (err) {
@@ -57,7 +69,7 @@ mongoose.connect (
     'mongodb://localhost:27017/yummy',
         { useUnifieordTopology: true },
         () => console.log('connected to DB'))
-app.listen(3000)
+app.listen(PORT || 3000)
 
 
 
