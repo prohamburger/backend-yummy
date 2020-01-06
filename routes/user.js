@@ -49,7 +49,7 @@ router.post('/login', async (req, res) => {
   });
 
   try {
-    const user = await User.find({username: user2.username})
+    const user = await User.find({username: user2.username}).select('-password')
       if (user.length !== 0)
         res.send({user, state: 'Success'})
     } catch {
